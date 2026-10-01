@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#120f0c">
+<title>{% block title %}The Good Stuff{% endblock %}</title>
+<link rel="icon" href="/static/icon.png">
+<link rel="apple-touch-icon" href="/static/icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap">
+<script>
+function gsRs(n){n=Math.round(+n||0);return(n<0?'-':'')+'₹'+Math.abs(n).toLocaleString('en-IN')}
+function gsToday(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function gsDay(iso){if(!iso)return'';iso=iso.slice(0,10);var t=gsToday();if(iso===t)return'Today';
+  var d=new Date(iso+'T00:00:00'),n=new Date(t+'T00:00:00'),off=Math.round((d-n)/864e5);
+  if(off===1)return'Tomorrow';if(off===-1)return'Yesterday';
+  return d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})}
+function gsEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+</script>
+<style>
+  /* The Good Stuff: espresso dark, logo gold, cream type. The logo's letters
+     are white with a gold shadow, so every surface it sits on stays dark. */
+  :root{
+    --ink:#120f0c; --surface:#1b1713; --surface-2:#241f1a; --surface-3:#2f2821;
+    --text:#f4ece0; --text-muted:#a99a88; --text-dim:#776a5c;
+    --gold:#d7b369; --gold-deep:#ba8b38; --gold-dim:rgba(215,179,105,.13);
+    --line:rgba(215,179,105,.24); --line-soft:rgba(244,236,224,.09);
+    --ok:#7cc293; --ok-bg:rgba(124,194,147,.14);
+    --warn:#e9a15b; --warn-bg:rgba(233,161,91,.14);
+    --bad:#ec7b66; --bad-bg:rgba(236,123,102,.14);
+    --btn-bg:#ba8b38; --btn-fg:#140f08;
+    --scrim:rgba(0,0,0,.66);
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);
+    font-family:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:15px;-webkit-font-smoothing:antialiased;line-height:1.5}
+  img{max-width:100%;display:block}
+  a{color:var(--gold)}
+  h1,h2,h3,.display{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+  .eyebrow{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin:0;font-weight:600}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-family:'Work Sans',system-ui,sans-serif;font-weight:700;font-size:13px;
+    letter-spacing:.06em;text-transform:uppercase;border:1px solid transparent;border-radius:10px;
+    padding:12px 18px;cursor:pointer;text-decoration:none;transition:filter .12s ease,background .12s;
+    white-space:nowrap}
+  .btn-gold{background:var(--btn-bg);color:var(--btn-fg)}
+  .btn-gold:hover{filter:brightness(1.1)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--gold)}
+  .btn-ghost:hover{background:var(--gold-dim)}
+  .btn-quiet{background:var(--surface-2);color:var(--text);border-color:var(--line-soft)}
+  .btn-quiet:hover{background:var(--surface-3)}
+  .btn-danger{background:transparent;border-color:rgba(236,123,102,.4);color:var(--bad)}
+  .btn-sm{padding:7px 11px;font-size:11.5px;border-radius:8px}
+  .btn-block{width:100%}
+
+  input,textarea,select{font:inherit;font-size:15px;width:100%;padding:10px 12px;
+    background:var(--surface-2);border:1px solid var(--line-soft);border-radius:9px;color:var(--text)}
+  input::placeholder,textarea::placeholder{color:var(--text-dim)}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--gold-deep);outline-offset:1px}
+  input[type=checkbox]{width:auto;accent-color:var(--gold-deep)}
+  textarea{resize:vertical;min-height:64px}
+  label.fl{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--text-muted);margin:0 0 5px}
+  .field{margin-bottom:13px}
+  .hint{font-size:12.5px;color:var(--text-dim);margin:4px 0 0}
+  label.fl .hint{text-transform:none;letter-spacing:0;font-weight:400;font-size:11.5px}
+  .tabular{font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.06em;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .pill-ok{background:var(--ok-bg);color:var(--ok)}
+  .pill-warn{background:var(--warn-bg);color:var(--warn)}
+  .pill-bad{background:var(--bad-bg);color:var(--bad)}
+  .pill-gold{background:var(--gold-dim);color:var(--gold)}
+  .pill-dim{background:var(--surface-3);color:var(--text-muted)}
+  .err{background:var(--bad-bg);color:var(--bad);border-radius:9px;padding:9px 12px;font-size:13.5px;margin-bottom:12px}
+  .muted{color:var(--text-muted)}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+  .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);opacity:0;
+    background:var(--surface-3);color:var(--text);border:1px solid var(--line);border-radius:10px;
+    padding:10px 16px;font-size:14px;z-index:100;transition:all .2s;pointer-events:none;max-width:90vw}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.bad{border-color:var(--bad);color:var(--bad)}
+  {% block style %}{% endblock %}
+</style>
+</head>
+<body>
+{% block body %}{% endblock %}
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+function gsToast(msg,bad){var t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast on'+(bad?' bad':'');clearTimeout(t._h);t._h=setTimeout(function(){t.className='toast'},2600)}
+async function gsApi(url,opts){opts=opts||{};var o={method:opts.method||'GET',headers:{}};
+  if(opts.body!==undefined){o.headers['Content-Type']='application/json';o.body=JSON.stringify(opts.body)}
+  var r=await fetch(url,o),j={};try{j=await r.json()}catch(e){}
+  if(r.status===401&&j.error==='signed_out'){location.reload();throw new Error('Signed out')}
+  if(!r.ok)throw new Error(j.error||('Something went wrong ('+r.status+')'));return j}
+</script>
+{% block script %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ settings.brand_name }} — staff sign in{% endblock %}
+{% block style %}
+  body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .box{width:100%;max-width:340px;background:var(--surface);border:1px solid var(--line-soft);
+    border-radius:16px;padding:26px 22px}
+  .logo{width:150px;margin:0 auto 6px}
+  .sub{text-align:center;margin:0 0 22px}
+{% endblock %}
+{% block body %}
+<form class="box" method="post">
+  <img class="logo" src="/asset/logo" alt="{{ settings.brand_name }}">
+  <p class="eyebrow sub">Staff sign in</p>
+  {% if error %}<div class="err">{{ error }}</div>{% endif %}
+  <div class="field">
+    <label class="fl" for="who">Your name</label>
+    <input id="who" name="who" autocomplete="username" required>
+  </div>
+  <div class="field">
+    <label class="fl" for="pin">Your PIN</label>
+    <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
+  </div>
+  <button class="btn btn-gold btn-block" type="submit">Sign in</button>
+</form>
+{% endblock %}

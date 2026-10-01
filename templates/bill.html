@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ settings.brand_name }} — {{ orders[0].code if single else 'Statement' }}{% endblock %}
+{% block style %}
+  .wrap{max-width:560px;margin:0 auto;padding:22px 16px 60px}
+  .logo{width:120px;margin:0 auto}
+  .head{text-align:center;margin-bottom:18px}
+  .head h1{font-size:24px;margin:10px 0 2px}
+  .card{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;padding:16px;margin:12px 0}
+  .ohead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+  .ohead b{font-family:'Fraunces',serif;font-size:17px}
+  .ohead span{font-size:12.5px;color:var(--text-muted)}
+  .ln{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:4px 0}
+  .ln .q{color:var(--text-muted)}
+  .ln.sub{border-top:1px solid var(--line-soft);margin-top:6px;padding-top:8px}
+  .ln.due{font-weight:700}
+  .ln .warn{color:var(--warn)}
+  .pay{text-align:center}
+  .pay .amt{font-family:'Fraunces',serif;font-size:34px;color:var(--gold);margin:4px 0 12px}
+  .qr{background:#fff;border-radius:12px;padding:10px;width:220px;margin:0 auto 12px}
+  .qr svg{width:100%;height:auto;display:block}
+  .paid{text-align:center;padding:20px}
+  .paid .display{font-size:22px;color:var(--ok)}
+  .foot{text-align:center;font-size:12.5px;color:var(--text-dim);margin-top:20px}
+{% endblock %}
+{% block body %}
+<div class="wrap">
+  <div class="head">
+    <img class="logo" src="/asset/logo" alt="{{ settings.brand_name }}">
+    <h1>{{ cafe.name if cafe else '' }}</h1>
+    <p class="eyebrow">{{ 'Order ' ~ orders[0].code if single else 'Statement' }}</p>
+  </div>
+
+  {% if total_due > 0 %}
+  <div class="card pay">
+    <p class="eyebrow">{{ 'Due on this order' if single else 'Total due' }}</p>
+    <div class="amt tabular">{{ rupees(total_due) }}</div>
+    {% if qr %}
+      <div class="qr" aria-label="UPI QR code">{{ qr|safe }}</div>
+      <a class="btn btn-gold btn-block" href="{{ upi }}">Pay on this phone</a>
+      <p class="hint">Scan with any UPI app, or tap above on your phone. UPI: {{ settings.upi_id }}</p>
+    {% else %}
+      <p class="hint">Message us for payment details.</p>
+    {% endif %}
+  </div>
+  {% elif single and orders[0].status == 'cancelled' %}
+  <div class="card paid"><div class="display" style="color:var(--text-muted)">This order was cancelled</div></div>
+  {% else %}
+  <div class="card paid"><div class="display">Paid in full — thank you</div></div>
+  {% endif %}
+
+  {% for o in orders %}
+  <div class="card">
+    <div class="ohead">
+      <b>{{ o.code }}</b>
+      <span>{{ o.created_at[:10] }} · {{ o.status_label }}</span>
+    </div>
+    {% for l in o.lines %}
+    <div class="ln"><span>{{ l.name }} — {{ l.variant_label }}<br><span class="q tabular">{{ l.qty }} {{ l.unit }} × {{ rupees(l.price) }}</span></span>
+      <span class="tabular">{{ rupees(l.line_total) }}</span></div>
+    {% endfor %}
+    <div class="ln sub"><span>Items</span><span class="tabular">{{ rupees(o.subtotal) }}</span></div>
+    {% if o.fulfilment == 'porter' %}
+    <div class="ln"><span>Porter</span>
+      {% if o.porter_fare %}<span class="tabular">{{ rupees(o.porter_fare) }}</span>
+      {% elif o.status != 'cancelled' %}<span class="warn">to be added</span>{% else %}<span>—</span>{% endif %}</div>
+    {% endif %}
+    <div class="ln"><span>Total</span><span class="tabular">{{ rupees(o.total) }}</span></div>
+    {% if o.paid_amount %}<div class="ln"><span>Paid</span><span class="tabular">−{{ rupees(o.paid_amount) }}</span></div>{% endif %}
+    {% if o.status != 'cancelled' %}<div class="ln due"><span>Due</span><span class="tabular">{{ rupees(o.due) }}</span></div>{% endif %}
+  </div>
+  {% endfor %}
+
+  <p class="foot">{{ settings.brand_name }}{% if settings.whatsapp %} · WhatsApp {{ settings.whatsapp }}{% endif %}</p>
+</div>
+{% endblock %}
